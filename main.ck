@@ -17,11 +17,11 @@ master[2] => dac.right;  // Connects right ([2]) to dac.right.
 SndBuf kick => master[1];  // Connects kick drum SndBuf to center master gain.
 SndBuf snare => master[1]; // Connects snare drum to center also.
 SndBuf hihat => master[2]; // Connects hihat to right master gain.
-SndBuf cowbell => master[0]; // Connects cowbell SndBuf to left master gain.
+SndBuf pulse => master[0]; // Connects pulse SndBuf to left master gain.
 
 // Use a Pan2 for the hand claps,
 // we'll use random panning later
-SndBuf claps => Pan2 claPan; // Connects clap SndBuf to a Pan2 object.
+SndBuf arp => Pan2 claPan; // Connects clap SndBuf to a Pan2 object.
 claPan.chan(0) => master[0]; // Connects the left (0) channel of the Pan2 to master gain left.
 claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to master gain right.
 
@@ -29,13 +29,14 @@ claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to ma
 me.dir()+"/sounds/kick.wav" => kick.read;
 me.dir()+"/sounds/snare.wav" => snare.read;
 me.dir()+"/sounds/hihat.wav" => hihat.read;
-me.dir()+"/sounds/pulse.wav" => cowbell.read;
-me.dir()+"/sounds/arp.wav" => claps.read;
+me.dir()+"/sounds/pulse.wav" => pulse.read;
+me.dir()+"/sounds/arp.wav" => arp.read;
 
 
 // Listing 4.12b Setting up variables for your big drum machine
 
-// (1) Array to control cowbell strikes.
+// (1) Array to control pulse strikes.
+// [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int cowHits[];
 [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int cowHits[];
 
 // controls the overall length of our "measures"
@@ -48,7 +49,7 @@ cowHits.cap() => int MAX_BEAT; // define using all caps, remember?
                // kick and snare drum hits.
 
 // overall speed control     // Master speed control (tempo)--
-0.15 :: second => dur tempo; // you'll use this to advance time each beat.
+0.35 :: second => dur tempo; // you'll use this to advance time each beat.
 
 // counters: beat within measures, and measure
 0 => int beat;    // Two counters, one for beat
@@ -71,24 +72,24 @@ while (true)
         0 => snare.pos;
     }
 
-    // After a time, randomly play hihat or cowbell
-    if (measure > 1) {    //  (3) Plays cowbell and hihat only after measure 1
-        if (cowHits[beat])   // (4) Plays cowbell, controlled by array
+    // After a time, randomly play hihat or pulse
+    if (measure > 1) {    //  (3) Plays pulse and hihat only after measure 1
+        if (cowHits[beat])   // (4) Plays pulse, controlled by array
         {
-            0 => cowbell.pos;
+            0 => pulse.pos;
         }
-        else              // (5) If not cowbell, then hi-hat
+        else              // (5) If not pulse, then hi-hat
         {
             Math.random2f(0.0,1.0) => hihat.gain;  // (6) Hi-hat has random gain
             0 => hihat.pos;
         }
     }
 
-    // after a time, play randomly spaced claps at end of measure
-    if (beat > 11 && measure > 3)  // (7) Plays claps only on certain measures and beats
+    // after a time, play randomly spaced arp at end of measure
+    if (beat > 11 && measure > 3)  // (7) Plays arp only on certain measures and beats
     {
-        Math.random2f(-1.0,1.0) => claPan.pan; // (8) Claps have random pan
-        0 => claps.pos;
+        Math.random2f(-1.0,1.0) => claPan.pan; // (8) arp have random pan
+        0 => arp.pos;
     }
 
     tempo => now;               // (9) Waits for one beat...

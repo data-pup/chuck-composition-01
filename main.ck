@@ -1,17 +1,16 @@
 // ----------------------------------------------------------------------------
-// Drum Machine, version 4.0
-// by block-rockin programmer, Jan 1, 2099
-// Changes made by other programmer, Dec 17 2096
+// NOTES:
+// ...
 // ----------------------------------------------------------------------------
 
 
 // ----------------------------------------------------------------------------
-// Routing Controls:
-// This section configures the audio routing. Create master channels,
-// and soundbuffers for each audio channel.
+// Audio Routing Controls:
+// This section configures the audio routing. Create master channels for
+// left, center, and right. Connect these to the DAC.
+// Declare soundbuffers for each audio channel.
 // ----------------------------------------------------------------------------
 
-// Here we'll use Modulo % and random to play drums
 // Define array of master Gains for left, center, right
 Gain master[3];
 master[0] => dac.left;
@@ -35,8 +34,6 @@ claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to ma
 // Load the audio samples that are used in this project. Audio samples
 // are stored in the sounds/ directory within this project.
 // ----------------------------------------------------------------------------
-
-// Loads all the sound files.
 me.dir()+"/sounds/kick.wav" => kick.read;
 me.dir()+"/sounds/snare.wav" => snare.read;
 me.dir()+"/sounds/hihat.wav" => hihat.read;
@@ -44,7 +41,7 @@ me.dir()+"/sounds/pulse.wav" => pulse.read;
 me.dir()+"/sounds/arp.wav" => arp.read;
 
 
-// Setting up variables for your big drum machine
+// ----------------------------------------------------------------------------
 
 // (1) Array to control pulse strikes.
 // [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
@@ -120,3 +117,13 @@ while (true)
         measure++;
     }
 }
+
+
+// ---------------------------------------------------------------------------
+// NOTE: This drum machine was built using Chapter 4.12 of the book
+// included with Chuck in the share/ directory.
+//
+// NOTE: The goal of this is to eventually transition from a simple
+// binary on/off operation for each note in a sequence to a probability
+// model.
+// ---------------------------------------------------------------------------

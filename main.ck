@@ -36,7 +36,7 @@ claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to ma
 // are stored in the sounds/ directory within this project.
 // ----------------------------------------------------------------------------
 
-// load up some samples of those            // Loads all the sound files.
+// Loads all the sound files.
 me.dir()+"/sounds/kick.wav" => kick.read;
 me.dir()+"/sounds/snare.wav" => snare.read;
 me.dir()+"/sounds/hihat.wav" => hihat.read;
@@ -44,15 +44,15 @@ me.dir()+"/sounds/pulse.wav" => pulse.read;
 me.dir()+"/sounds/arp.wav" => arp.read;
 
 
-// Listing 4.12b Setting up variables for your big drum machine
+// Setting up variables for your big drum machine
 
 // (1) Array to control pulse strikes.
-// [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int cowHits[];
-[1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int cowHits[];
+// [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
+[1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
 
 // controls the overall length of our "measures"
 // .cap() determines the maximum number of beats in your measure.
-cowHits.cap() => int MAX_BEAT; // define using all caps, remember?
+pulseSequence.cap() => int MAX_BEAT; // define using all caps, remember?
 
 // modulo number for controlling kick and snare
 4 => int MOD;  // Constant for MOD operator--
@@ -88,7 +88,7 @@ while (true)
 
     // After a time, randomly play hihat or pulse
     if (measure > 1) {    //  (3) Plays pulse and hihat only after measure 1
-        if (cowHits[beat])   // (4) Plays pulse, controlled by array
+        if (pulseSequence[beat])   // (4) Plays pulse, controlled by array
         {
             0 => pulse.pos;
         }

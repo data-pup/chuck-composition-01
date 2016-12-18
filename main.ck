@@ -97,7 +97,6 @@ while (true)
 {
     // Kick Control:
     // ----------------------------------------------------------------------
-    // if (beat % 4 == 0)
     if (kickSequence[beat])
     {
         0 => kick.pos;
@@ -106,7 +105,6 @@ while (true)
 
     // Snare Control:
     // ----------------------------------------------------------------------
-    // if (beat % 4 == 2 && measure %2 == 1)
     if (snareSequence[beat])
     {
         0 => snare.pos;
@@ -133,7 +131,6 @@ while (true)
 
     // Arp Control:
     // ----------------------------------------------------------------------
-    // if (beat > 11 && measure > 3) {
     if (arpSequence[beat]) {
         Math.random2f(-1.0,1.0) => claPan.pan;
         0 => arp.pos;

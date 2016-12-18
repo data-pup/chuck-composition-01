@@ -54,8 +54,14 @@ me.dir()+"/sounds/arp.wav" => arp.read;
 // ----------------------------------------------------------------------------
 
 // Array to control pulse strikes.
-// [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
+
+[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0] @=> int kickSequence[];
+[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0] @=> int snareSequence[];
+[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0] @=> int hihatSequence[];
 [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
+[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0] @=> int arpSequence[];
+
+
 
 // ----------------------------------------------------------------------------
 // Time Signature:
@@ -73,6 +79,7 @@ pulseSequence.cap() => int MAX_BEAT; // define using all caps, remember?
 // Beat and measure counters.
 0 => int beat;
 0 => int measure;
+
 
 // ----------------------------------------------------------------------------
 // Tempo Control:

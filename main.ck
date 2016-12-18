@@ -1,8 +1,15 @@
-// Listing 4.12a SndBufs and panning connections for your big drum machine
+// ----------------------------------------------------------------------------
 // Drum Machine, version 4.0
 // by block-rockin programmer, Jan 1, 2099
-// ----------------------------------------------------------------------------
 // Changes made by other programmer, Dec 17 2096
+// ----------------------------------------------------------------------------
+
+
+// ----------------------------------------------------------------------------
+// Routing Controls:
+// This section configures the audio routing. Create master channels,
+// and soundbuffers for each audio channel.
+// ----------------------------------------------------------------------------
 
 // Here we'll use Modulo % and random to play drums
 // Define array of master Gains for left, center, right
@@ -24,6 +31,13 @@ SndBuf pulse => master[0]; // Connects pulse SndBuf to left master gain.
 SndBuf arp => Pan2 claPan; // Connects clap SndBuf to a Pan2 object.
 claPan.chan(0) => master[0]; // Connects the left (0) channel of the Pan2 to master gain left.
 claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to master gain right.
+
+
+// ----------------------------------------------------------------------------
+// Audio Samples:
+// Load the audio samples that are used in this project. Audio samples
+// are stored in the sounds/ directory within this project.
+// ----------------------------------------------------------------------------
 
 // load up some samples of those            // Loads all the sound files.
 me.dir()+"/sounds/kick.wav" => kick.read;
@@ -49,13 +63,16 @@ cowHits.cap() => int MAX_BEAT; // define using all caps, remember?
                // kick and snare drum hits.
 
 // overall speed control     // Master speed control (tempo)--
-0.35 :: second => dur tempo; // you'll use this to advance time each beat.
+0.35 :: second => dur tempo;
 
 // counters: beat within measures, and measure
 0 => int beat;    // Two counters, one for beat
 0 => int measure; // and one for measure number.
 
-// Listing 4.12c Main loop to actually play drum patterns
+
+// ----------------------------------------------------------------------------
+// Main loop
+// ----------------------------------------------------------------------------
 
 // Main infinite drum loop
 while (true)

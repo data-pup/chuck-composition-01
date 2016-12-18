@@ -14,20 +14,17 @@
 // Here we'll use Modulo % and random to play drums
 // Define array of master Gains for left, center, right
 Gain master[3];
-master[0] => dac.left;   // Connects left ([0]) to dac.left.
-master[1] => dac;        // Connects center ([1]) to dac (both
-                         //   left and right automatically).
-master[2] => dac.right;  // Connects right ([2]) to dac.right.
+master[0] => dac.left;
+master[1] => dac;
+master[2] => dac.right;
 
-// Declare SndBufs for lots of drums
-// hook them up to pan positions
+// Declare SndBufs for lots of drums, hook them up to pan positions.
 SndBuf kick => master[1];  // Connects kick drum SndBuf to center master gain.
 SndBuf snare => master[1]; // Connects snare drum to center also.
 SndBuf hihat => master[2]; // Connects hihat to right master gain.
 SndBuf pulse => master[0]; // Connects pulse SndBuf to left master gain.
 
-// Use a Pan2 for the hand claps,
-// we'll use random panning later
+// Use a Pan2 for the hand claps, we'll use random panning later.
 SndBuf arp => Pan2 claPan; // Connects clap SndBuf to a Pan2 object.
 claPan.chan(0) => master[0]; // Connects the left (0) channel of the Pan2 to master gain left.
 claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to master gain right.

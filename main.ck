@@ -74,43 +74,49 @@ pulseSequence.cap() => int MAX_BEAT; // define using all caps, remember?
 // Main infinite drum loop
 while (true)
 {
-    // play kick drum on all main beats (0, 4, ...)
-    if (beat % 4 == 0)     // (1) Uses MOD 4 to play
-    {                      //     kick drum every fourth beat
+    // Kick Control:
+    if (beat % 4 == 0)
+    {
         0 => kick.pos;
     }
 
-    // after a time, play snare on off beats (2, 6, ...)
-    if (beat % 4 == 2 && measure %2 == 1) // (2) Plays snare only on specific beats
+    // Snare Control:
+    if (beat % 4 == 2 && measure %2 == 1)
     {
         0 => snare.pos;
     }
 
-    // After a time, randomly play hihat or pulse
-    if (measure > 1) {    //  (3) Plays pulse and hihat only after measure 1
-        if (pulseSequence[beat])   // (4) Plays pulse, controlled by array
+    // TODO: Pulse, HiHat Control: (Separate this into two fields.)
+    if (measure > 1) {
+        if (pulseSequence[beat])
         {
             0 => pulse.pos;
         }
-        else              // (5) If not pulse, then hi-hat
+        else
         {
-            Math.random2f(0.0,1.0) => hihat.gain;  // (6) Hi-hat has random gain
+            Math.random2f(0.0,1.0) => hihat.gain;
             0 => hihat.pos;
         }
     }
 
-    // after a time, play randomly spaced arp at end of measure
-    if (beat > 11 && measure > 3)  // (7) Plays arp only on certain measures and beats
+    // Arp Control:
+    if (beat > 11 && measure > 3)
     {
-        Math.random2f(-1.0,1.0) => claPan.pan; // (8) arp have random pan
+        Math.random2f(-1.0,1.0) => claPan.pan;
         0 => arp.pos;
     }
 
-    tempo => now;               // (9) Waits for one beat...
 
-    (beat + 1) % MAX_BEAT => beat; // (10) ...and then updates beat counter (MOD MAX)
+    // Global Control:
+    // ----------------------------------------------------------------------
+    // This section updates the global time, and updates
+    // the beat/measure counter using the modulo operator.
+    // ----------------------------------------------------------------------
+    tempo => now;
+
+    (beat + 1) % MAX_BEAT => beat;
     if (beat==0)
-    {            // (11) Increments measure counter at each new measure
+    {
         measure++;
     }
 }

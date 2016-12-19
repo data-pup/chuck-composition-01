@@ -43,24 +43,55 @@ claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to ma
 // are stored in the sounds/ directory within this project.
 // ----------------------------------------------------------------------------
 
-me.dir()+"/sounds/kick.wav" => kick.read;
+// me.dir()+"/sounds/kick.wav" => kick.read;
+me.dir()+"/sounds/4Harambe02.wav" => kick.read;
 me.dir()+"/sounds/snare.wav" => snare.read;
-me.dir()+"/sounds/hihat.wav" => hihat.read;
+// me.dir()+"/sounds/hihat.wav" => hihat.read;
+me.dir()+"/sounds/4Harambe01.wav" => hihat.read;
 me.dir()+"/sounds/pulse.wav" => pulse.read;
-me.dir()+"/sounds/arp.wav" => arp.read;
+// me.dir()+"/sounds/arp.wav" => arp.read;
+me.dir()+"/sounds/4Harambe01.wav" => arp.read;
 
 
 // ----------------------------------------------------------------------------
-// Sequence Arrays: TODO
+// Sequence Arrays:
+// These arrays control when notes are played in a measure for each channel.
 // ----------------------------------------------------------------------------
 
-// Array to control pulse strikes.
+// Channel patterns.
+[1,1,0,1, 1,0,1,0, 1,0,0,0, 0,1,1,1,
+ 1,1,0,1, 1,0,1,0, 1,1,1,1, 1,1,1,1] @=> int kickSequence[];
 
-[1,1,0,1, 1,0,1,0, 1,0,0,0, 0,1,1,1] @=> int kickSequence[];
-[0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,1,1] @=> int snareSequence[];
-[1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,0,1] @=> int hihatSequence[];
-[1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
-[1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence[];
+[0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,1,1,
+ 0,0,0,1, 0,0,0,1, 0,0,0,1, 1,1,1,1] @=> int snareSequence[];
+
+[1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+ 1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,1,1] @=> int hihatSequence[];
+
+[1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1,
+ 1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
+
+[1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1,
+ 1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence[];
+
+// Declare integers representing the length of each sequence.
+kickSequence.cap() => int kickSequenceLength;
+snareSequence.cap() => int snareSequenceLength;
+hihatSequence.cap() => int hihatSequenceLength;
+pulseSequence.cap() => int pulseSequenceLength;
+arpSequence.cap() => int arpSequenceLength;
+
+
+// ----------------------------------------------------------------------------
+// Start offsets:
+// These integers control how many measures should pass before a channel
+// begins to play.
+// ----------------------------------------------------------------------------
+1 => int kickStart;
+0 => int snareStart;
+0 => int hihatStart;
+0 => int pulseStart;
+0 => int arpStart;
 
 
 
@@ -70,7 +101,7 @@ me.dir()+"/sounds/arp.wav" => arp.read;
 // ----------------------------------------------------------------------------
 
 // controls the overall length of our "measures"
-16 => int MAX_BEAT;
+32 => int MAX_BEAT;
 
 // modulo number for controlling kick and snare
 4 => int MOD;  // Constant for MOD operator--
@@ -87,7 +118,7 @@ me.dir()+"/sounds/arp.wav" => arp.read;
 // Declare the variables that control the global tempo.
 // NOTE: This duration is the tempo between beats.
 // ----------------------------------------------------------------------------
-0.20 :: second => dur tempo;
+0.18 :: second => dur tempo;
 
 
 // ----------------------------------------------------------------------------
@@ -97,24 +128,26 @@ while (true)
 {
     // Kick Control:
     // ----------------------------------------------------------------------
-    if (kickSequence[beat])
-    {
-        0 => kick.pos;
+    if (measure > kickStart) {
+      if (kickSequence[beat % kickSequenceLength])
+      {
+          0 => kick.pos;
+      }
     }
     // ----------------------------------------------------------------------
 
     // Snare Control:
     // ----------------------------------------------------------------------
-    if (snareSequence[beat])
+    if (snareSequence[beat % snareSequenceLength])
     {
         0 => snare.pos;
     }
     // ----------------------------------------------------------------------
 
-    // TODO: Pulse Control:
+    // Pulse Control:
     // ----------------------------------------------------------------------
     if (measure > 1) {
-        if (pulseSequence[beat])
+        if (pulseSequence[beat % pulseSequenceLength])
         {
             0 => pulse.pos;
         }
@@ -123,7 +156,7 @@ while (true)
 
     // HiHat Control:
     // ----------------------------------------------------------------------
-    if (hihatSequence[beat]) {
+    if (hihatSequence[beat % hihatSequenceLength]) {
             Math.random2f(0.0,1.0) => hihat.gain;
             0 => hihat.pos;
     }
@@ -131,7 +164,7 @@ while (true)
 
     // Arp Control:
     // ----------------------------------------------------------------------
-    if (arpSequence[beat]) {
+    if (arpSequence[beat % arpSequenceLength]) {
         Math.random2f(-1.0,1.0) => claPan.pan;
         0 => arp.pos;
     }

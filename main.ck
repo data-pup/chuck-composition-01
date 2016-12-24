@@ -84,10 +84,10 @@ arpSequence.cap() => int arpSequenceLength;
 // These integers control how many measures should pass before a channel
 // begins to play.
 // ----------------------------------------------------------------------------
-2 => int kickStart;
-4 => int snareStart;
-4 => int hihatStart;
-1 => int pulseStart;
+1 => int kickStart;
+2 => int snareStart;
+2 => int hihatStart;
+0 => int pulseStart;
 0 => int arpStart;
 
 
@@ -115,7 +115,7 @@ arpSequence.cap() => int arpSequenceLength;
 // Declare the variables that control the global tempo.
 // NOTE: This duration is the tempo between beats.
 // ----------------------------------------------------------------------------
-0.18 :: second => dur tempo;
+0.15 :: second => dur tempo;
 
 
 // ----------------------------------------------------------------------------

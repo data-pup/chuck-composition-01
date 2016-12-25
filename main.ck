@@ -59,8 +59,8 @@ me.dir()+"/sounds/arp.wav" => arp.read;
 [1,1,0,1, 1,0,1,0, 1,0,0,0, 0,1,1,1,
  1,1,0,1, 1,0,1,0, 1,1,1,1, 1,1,1,1] @=> int kickSequence[];
 
-[0,0,0,1, 0,0,0,1, 0,0,0,1, 0,0,1,1,
- 0,0,0,1, 0,0,0,1, 0,0,0,1, 1,1,1,1] @=> int snareSequence[];
+[0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,
+0,0,0,0, 1,0,0,0, 0,0,0,0, 1,1,1,1] @=> int snareSequence[];
 
 [1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,0,0,
  1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,1,1] @=> int hihatSequence[];
@@ -84,11 +84,11 @@ arpSequence.cap() => int arpSequenceLength;
 // These integers control how many measures should pass before a channel
 // begins to play.
 // ----------------------------------------------------------------------------
-1 => int kickStart;
+2 => int kickStart;
 2 => int snareStart;
-2 => int hihatStart;
+0 => int hihatStart;
 0 => int pulseStart;
-0 => int arpStart;
+4 => int arpStart;
 
 
 
@@ -115,7 +115,7 @@ arpSequence.cap() => int arpSequenceLength;
 // Declare the variables that control the global tempo.
 // NOTE: This duration is the tempo between beats.
 // ----------------------------------------------------------------------------
-0.15 :: second => dur tempo;
+0.10 :: second => dur tempo;
 
 
 // ----------------------------------------------------------------------------

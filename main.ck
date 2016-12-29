@@ -25,17 +25,81 @@ master[0] => dac.left;
 master[1] => dac;
 master[2] => dac.right;
 
-// Declare SndBufs for lots of drums, hook them up to pan positions.
-SndBuf kick => master[1];  // Connects kick drum SndBuf to center master gain.
-SndBuf snare => master[1]; // Connects snare drum to center also.
-SndBuf hihat => master[2]; // Connects hihat to right master gain.
-SndBuf pulse => master[0]; // Connects pulse SndBuf to left master gain.
+// Declare Channels (with panning).
+// For each sound buffer, send the audio to a Pan2 object.
+// Example for panning: Math.random2f(-1.0,1.0) => arpPan.pan;
+// This statement randomly pans the channel.
+// ----------------------------------------------------------------------------
+SndBuf kick => Pan2 kickPan;
+kickPan.chan(0) => master[0];
+kickPan.chan(1) => master[2];
 
-// Use a Pan2 for the hand claps, we'll use random panning later.
-SndBuf arp => Pan2 claPan; // Connects clap SndBuf to a Pan2 object.
-claPan.chan(0) => master[0]; // Connects the left (0) channel of the Pan2 to master gain left.
-claPan.chan(1) => master[2]; // Connects the right (1) channel of the Pan2 to master gain right.
+SndBuf snare => Pan2 snarePan;
+snarePan.chan(0) => master[0];
+snarePan.chan(1) => master[2];
 
+SndBuf hihat => Pan2 hihatPan;
+hihatPan.chan(0) => master[0];
+hihatPan.chan(1) => master[2];
+
+SndBuf pulse => Pan2 pulsePan;
+pulsePan.chan(0) => master[0];
+pulsePan.chan(1) => master[2];
+
+SndBuf arp => Pan2 arpPan;
+arpPan.chan(0) => master[0];
+arpPan.chan(1) => master[2];
+
+
+// ----------------------------------------------------------------------------
+// Panning Settings:
+// Set the base pan settings and jitter amounts.
+// ----------------------------------------------------------------------------
+0.0 => float kickPanCenter;
+0.4 => float kickPanJitterR;
+-0.4 => float kickPanJitterL;
+
+0.4 => float snarePanCenter;
+0.3 => float snarePanJitterR;
+-0.2 => float snarePanJitterL;
+
+0.0 => float pulsePanCenter;
+0.9 => float pulsePanJitterR;
+-0.9 => float pulsePanJitterL;
+
+-0.3 => float hihatPanCenter;
+0.6 => float hihatPanJitterR;
+-0.1 => float hihatPanJitterL;
+
+0.7 => float arpPanCenter;
+0.1 => float arpPanJitterR;
+-1.1 => float arpPanJitterL;
+
+// ----------------------------------------------------------------------------
+// Gain Settings:
+// Set the amount of gain jitter, as well as the baseline volume.
+// Note, the baseline value , and the random value minimum/maximum are
+// all independent! Be creative :)
+// ----------------------------------------------------------------------------
+0.6 => float kickGainBaseline;
+-0.4 => float kickGainRandMin;
+0.3 => float kickGainRandMax;
+
+0.8 => float snareGainBaseline;
+-0.2 => float snareGainRandMin;
+0.0 => float snareGainRandMax;
+
+0.3 => float hihatGainBaseline;
+-0.2 => float hihatGainRandMin;
+0.0 => float hihatGainRandMax;
+
+0.8 => float pulseGainBaseline;
+-0.5 => float pulseGainRandMin;
+0.0 => float pulseGainRandMax;
+
+0.2 => float arpGainBaseline;
+-0.1 => float arpGainRandMin;
+0.7 => float arpGainRandMax;
 
 // ----------------------------------------------------------------------------
 // Audio Samples:
@@ -84,11 +148,11 @@ arpSequence.cap() => int arpSequenceLength;
 // These integers control how many measures should pass before a channel
 // begins to play.
 // ----------------------------------------------------------------------------
-2 => int kickStart;
-2 => int snareStart;
+0 => int kickStart;
+0 => int snareStart;
 0 => int hihatStart;
 0 => int pulseStart;
-4 => int arpStart;
+0 => int arpStart;
 
 
 
@@ -127,6 +191,10 @@ while (true)
     // ----------------------------------------------------------------------
     if (measure >= kickStart) {
       if (kickSequence[beat % kickSequenceLength]) {
+          kickGainBaseline + Math.random2f(
+            kickGainRandMin, kickGainRandMax) => kick.gain;
+          kickPanCenter + Math.random2f(
+            kickPanJitterL, kickPanJitterR) => kickPan.pan;
           0 => kick.pos;
       }
     }
@@ -136,6 +204,10 @@ while (true)
     // ----------------------------------------------------------------------
     if (measure >= snareStart) {
       if (snareSequence[beat % snareSequenceLength]) {
+          snareGainBaseline + Math.random2f(
+            snareGainRandMin, snareGainRandMax) => snare.gain;
+          snarePanCenter + Math.random2f(
+            snarePanJitterL, snarePanJitterR) => snarePan.pan;
           0 => snare.pos;
       }
     }
@@ -144,27 +216,38 @@ while (true)
     // Pulse Control:
     // ----------------------------------------------------------------------
     if (measure >= pulseStart) {
-        if (pulseSequence[beat % pulseSequenceLength]) {
-            0 => pulse.pos;
-        }
-    }
-    // ----------------------------------------------------------------------
-
-    // HiHat Control:
-    // ----------------------------------------------------------------------
-    if (measure >= hihatStart) {
-      if (hihatSequence[beat % hihatSequenceLength]) {
-              Math.random2f(0.0,1.0) => hihat.gain;
-              0 => hihat.pos;
+      if (pulseSequence[beat % pulseSequenceLength]) {
+          pulseGainBaseline + Math.random2f(
+            pulseGainRandMin, pulseGainRandMax) => pulse.gain;
+          pulsePanCenter + Math.random2f(
+            pulsePanJitterL, pulsePanJitterR) => pulsePan.pan;
+          0 => pulse.pos;
       }
     }
     // ----------------------------------------------------------------------
 
-    // Arp Control:
+
+    // Hihat Control:
+    // ----------------------------------------------------------------------
+    if (measure >= hihatStart) {
+      if (hihatSequence[beat % hihatSequenceLength]) {
+          hihatGainBaseline + Math.random2f(
+            hihatGainRandMin, hihatGainRandMax) => hihat.gain;
+          hihatPanCenter + Math.random2f(
+            hihatPanJitterL, hihatPanJitterR) => hihatPan.pan;
+          0 => hihat.pos;
+      }
+    }
+    // ----------------------------------------------------------------------
+
+    // Hihat Control:
     // ----------------------------------------------------------------------
     if (measure >= arpStart) {
       if (arpSequence[beat % arpSequenceLength]) {
-          Math.random2f(-1.0,1.0) => claPan.pan;
+          arpGainBaseline + Math.random2f(
+            arpGainRandMin, arpGainRandMax) => arp.gain;
+          arpPanCenter + Math.random2f(
+            arpPanJitterL, arpPanJitterR) => arpPan.pan;
           0 => arp.pos;
       }
     }

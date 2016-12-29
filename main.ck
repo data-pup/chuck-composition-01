@@ -245,11 +245,11 @@ arpSequence02Flux, arpSequence03Flux] @=> float arpSequenceFluxes[];
 // These integers control how many measures should pass before a channel
 // begins to play.
 // ----------------------------------------------------------------------------
-0 => int kickStart;
-0 => int snareStart;
-0 => int hihatStart;
+12 => int kickStart;
+12 => int snareStart;
+4 => int hihatStart;
 0 => int pulseStart;
-0 => int arpStart;
+8 => int arpStart;
 
 
 // ----------------------------------------------------------------------------
@@ -296,7 +296,8 @@ arpSequences[arpState].cap() => int arpSequenceLength;
 // Declare the variables that control the global tempo.
 // NOTE: This duration is the tempo between beats.
 // ----------------------------------------------------------------------------
-0.18 :: second => dur tempo;
+0.15 :: second => dur tempo;
+0.012 :: second => dur swing;
 
 
 // ----------------------------------------------------------------------------
@@ -377,7 +378,8 @@ while (true)
     // This section updates the global time, and updates
     // the beat/measure counter using the modulo operator.
     // ----------------------------------------------------------------------
-    tempo => now;
+    if (beat % 2 == 0) {tempo - swing => now;}
+    else {tempo + swing => now;}
 
     (beat + 1) % MAX_BEAT => beat;
     if (beat==0)

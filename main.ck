@@ -99,7 +99,7 @@ arpPan.chan(1) => master[2];
 
 0.2 => float arpGainBaseline;
 -0.1 => float arpGainRandMin;
-0.7 => float arpGainRandMax;
+0.4 => float arpGainRandMax;
 
 // ----------------------------------------------------------------------------
 // Audio Samples:
@@ -119,28 +119,125 @@ me.dir()+"/sounds/arp.wav" => arp.read;
 // These arrays control when notes are played in a measure for each channel.
 // ----------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------
 // Channel patterns.
+// Conceptual Overview: Each channel has a set of 4 arrays of 32 numbers,
+// where each value is a floating point number representing the
+// likelihood of an individual note occurring.
+//
+// For each note, generate a random value between 0 and 1, and only play
+// the note if the random value is less than the likelihood value.
+// NOTE: 1 means note always occurs, 0 means never.
+//
+// As a group, select one of the four sequences by either following the
+// state of others, or incrementing/decrementing, or generating a purely
+// random new state. Each of these 4 states are assumed to be progressively
+// more "busy", and the likelihood that a channel stays in position when
+// a new state is generated can also be controlled.
+// ----------------------------------------------------------------------------
+
+[1,1,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0,
+ 1,1,0,1, 0,0,1,0, 0,0,0,0, 0,1,1,1] @=> int kickSequence00[];
+[1,1,0,1, 0,0,1,0, 0,0,0,0, 0,1,1,1,
+ 1,1,0,1, 0,0,1,0, 1,1,0,0, 0,1,1,1] @=> int kickSequence01[];
 [1,1,0,1, 1,0,1,0, 1,0,0,0, 0,1,1,1,
- 1,1,0,1, 1,0,1,0, 1,1,1,1, 1,1,1,1] @=> int kickSequence[];
+ 1,1,0,1, 1,0,1,0, 0,0,1,1, 1,1,1,1] @=> int kickSequence02[];
+[1,1,0,1, 1,0,1,0, 1,0,0,0, 0,1,1,1,
+ 1,1,0,1, 1,0,1,0, 1,1,1,1, 1,1,1,1] @=> int kickSequence03[];
+
+0.1 => float kickSequence00Flux;
+0.1 => float kickSequence01Flux;
+0.1 => float kickSequence02Flux;
+0.1 => float kickSequence03Flux;
+
+[kickSequence00,kickSequence01,
+kickSequence02,kickSequence03] @=> int kickSequences[][];
+
+[kickSequence00Flux, kickSequence01Flux,
+kickSequence02Flux, kickSequence03Flux] @=> float kickSequenceFluxes[];
 
 [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0,
-0,0,0,0, 1,0,0,0, 0,0,0,0, 1,1,1,1] @=> int snareSequence[];
+0,0,0,0, 1,0,0,0, 0,0,0,0, 1,1,1,1] @=> int snareSequence00[];
+[0,0,0,0, 1,0,0,1, 0,0,1,0, 1,0,0,0,
+0,0,0,0, 1,0,0,1, 0,0,0,0, 1,1,1,1] @=> int snareSequence01[];
+[0,0,0,0, 1,0,0,1, 0,0,1,0, 1,0,0,0,
+0,0,0,0, 1,0,0,0, 0,0,1,1, 1,1,1,1] @=> int snareSequence02[];
+[0,0,0,0, 1,0,1,0, 1,0,0,0, 1,0,0,0,
+0,0,0,0, 1,0,0,0, 0,0,0,0, 1,1,1,1] @=> int snareSequence03[];
+
+0.1 => float snareSequence00Flux;
+0.1 => float snareSequence01Flux;
+0.1 => float snareSequence02Flux;
+0.1 => float snareSequence03Flux;
+
+[snareSequence00,snareSequence01,
+snareSequence02,snareSequence03] @=> int snareSequences[][];
+
+[snareSequence00Flux, snareSequence01Flux,
+snareSequence02Flux, snareSequence03Flux] @=> float snareSequenceFluxes[];
+
 
 [1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,0,0,
- 1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,1,1] @=> int hihatSequence[];
+ 1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,1,1] @=> int hihatSequence00[];
+[1,1,1,1, 0,0,0,0, 1,0,1,0, 0,0,1,0,
+ 1,1,1,1, 0,0,0,0, 1,0,1,0, 0,0,1,1] @=> int hihatSequence01[];
+[1,1,1,1, 0,0,0,0, 1,0,0,1, 0,1,0,0,
+ 1,1,1,1, 0,0,0,0, 0,0,0,0, 1,1,1,1] @=> int hihatSequence02[];
+[1,1,1,1, 0,0,0,1, 0,1,0,1, 0,0,0,0,
+ 1,1,1,1, 0,0,0,0, 0,1,0,1, 0,0,1,1] @=> int hihatSequence03[];
+
+0.1 => float hihatSequence00Flux;
+0.1 => float hihatSequence01Flux;
+0.1 => float hihatSequence02Flux;
+0.1 => float hihatSequence03Flux;
+
+[hihatSequence00,hihatSequence01,
+hihatSequence02,hihatSequence03] @=> int hihatSequences[][];
+
+[hihatSequence00Flux, hihatSequence01Flux,
+hihatSequence02Flux, hihatSequence03Flux] @=> float hihatSequenceFluxes[];
+
 
 [1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1,
- 1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence[];
+ 1,0,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence00[];
+[1,1,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1,
+ 1,0,1,0, 1,0,0,1, 0,1,1,1, 0,1,1,1] @=> int pulseSequence01[];
+[1,0,1,0, 1,0,0,1, 0,1,1,1, 0,1,1,1,
+ 1,1,1,0, 1,0,0,1, 0,1,0,1, 0,1,1,1] @=> int pulseSequence02[];
+[1,1,1,0, 1,0,0,1, 0,1,1,1, 0,1,1,1,
+ 1,1,1,0, 1,0,0,1, 0,1,1,1, 0,1,1,1] @=> int pulseSequence03[];
 
+0.1 => float pulseSequence00Flux;
+0.1 => float pulseSequence01Flux;
+0.1 => float pulseSequence02Flux;
+0.1 => float pulseSequence03Flux;
+
+[pulseSequence00,pulseSequence01,
+pulseSequence02,pulseSequence03] @=> int pulseSequences[][];
+
+[pulseSequence00Flux, pulseSequence01Flux,
+pulseSequence02Flux, pulseSequence03Flux] @=> float pulseSequenceFluxes[];
+
+
+[1,1,0,0, 1,1,0,0, 0,0,0,0, 0,1,1,1,
+ 0,0,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence00[];
 [1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1,
- 1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence[];
+ 1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence01[];
+[1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1,
+ 1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence02[];
+[1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1,
+ 1,1,0,0, 1,1,0,0, 0,1,0,1, 0,1,1,1] @=> int arpSequence03[];
 
-// Declare integers representing the length of each sequence.
-kickSequence.cap() => int kickSequenceLength;
-snareSequence.cap() => int snareSequenceLength;
-hihatSequence.cap() => int hihatSequenceLength;
-pulseSequence.cap() => int pulseSequenceLength;
-arpSequence.cap() => int arpSequenceLength;
+0.1 => float arpSequence00Flux;
+0.1 => float arpSequence01Flux;
+0.1 => float arpSequence02Flux;
+0.1 => float arpSequence03Flux;
+
+[arpSequence00,arpSequence01,
+arpSequence02,arpSequence03] @=> int arpSequences[][];
+
+[arpSequence00Flux, arpSequence01Flux,
+arpSequence02Flux, arpSequence03Flux] @=> float arpSequenceFluxes[];
 
 
 // ----------------------------------------------------------------------------
@@ -154,6 +251,26 @@ arpSequence.cap() => int arpSequenceLength;
 0 => int pulseStart;
 0 => int arpStart;
 
+
+// ----------------------------------------------------------------------------
+// State Variables:
+// Holds the index pointing to the channel's current state.
+// ----------------------------------------------------------------------------
+0 => int kickState;
+0 => int snareState;
+0 => int hihatState;
+0 => int pulseState;
+0 => int arpState;
+
+
+// ----------------------------------------------------------------------------
+// Initialize integers representing the length of each sequence.
+// ----------------------------------------------------------------------------
+kickSequences[kickState].cap() => int kickSequenceLength;
+snareSequences[snareState].cap() => int snareSequenceLength;
+hihatSequences[hihatState].cap() => int hihatSequenceLength;
+pulseSequences[pulseState].cap() => int pulseSequenceLength;
+arpSequences[arpState].cap() => int arpSequenceLength;
 
 
 // ----------------------------------------------------------------------------
@@ -179,7 +296,7 @@ arpSequence.cap() => int arpSequenceLength;
 // Declare the variables that control the global tempo.
 // NOTE: This duration is the tempo between beats.
 // ----------------------------------------------------------------------------
-0.10 :: second => dur tempo;
+0.18 :: second => dur tempo;
 
 
 // ----------------------------------------------------------------------------
@@ -190,7 +307,7 @@ while (true)
     // Kick Control:
     // ----------------------------------------------------------------------
     if (measure >= kickStart) {
-      if (kickSequence[beat % kickSequenceLength]) {
+      if (kickSequences[kickState][beat % kickSequenceLength]) {
           kickGainBaseline + Math.random2f(
             kickGainRandMin, kickGainRandMax) => kick.gain;
           kickPanCenter + Math.random2f(
@@ -203,7 +320,7 @@ while (true)
     // Snare Control:
     // ----------------------------------------------------------------------
     if (measure >= snareStart) {
-      if (snareSequence[beat % snareSequenceLength]) {
+      if (snareSequences[snareState][beat % snareSequenceLength]) {
           snareGainBaseline + Math.random2f(
             snareGainRandMin, snareGainRandMax) => snare.gain;
           snarePanCenter + Math.random2f(
@@ -216,7 +333,7 @@ while (true)
     // Pulse Control:
     // ----------------------------------------------------------------------
     if (measure >= pulseStart) {
-      if (pulseSequence[beat % pulseSequenceLength]) {
+      if (pulseSequences[pulseState][beat % pulseSequenceLength]) {
           pulseGainBaseline + Math.random2f(
             pulseGainRandMin, pulseGainRandMax) => pulse.gain;
           pulsePanCenter + Math.random2f(
@@ -230,7 +347,7 @@ while (true)
     // Hihat Control:
     // ----------------------------------------------------------------------
     if (measure >= hihatStart) {
-      if (hihatSequence[beat % hihatSequenceLength]) {
+      if (hihatSequences[hihatState][beat % hihatSequenceLength]) {
           hihatGainBaseline + Math.random2f(
             hihatGainRandMin, hihatGainRandMax) => hihat.gain;
           hihatPanCenter + Math.random2f(
@@ -240,10 +357,10 @@ while (true)
     }
     // ----------------------------------------------------------------------
 
-    // Hihat Control:
+    // Arp Control:
     // ----------------------------------------------------------------------
     if (measure >= arpStart) {
-      if (arpSequence[beat % arpSequenceLength]) {
+      if (arpSequences[arpState][beat % arpSequenceLength]) {
           arpGainBaseline + Math.random2f(
             arpGainRandMin, arpGainRandMax) => arp.gain;
           arpPanCenter + Math.random2f(
@@ -266,6 +383,106 @@ while (true)
     if (beat==0)
     {
         measure++;
+        // NOTE: If the measure % 4, slant towards *some change*,
+        // and if the measure is % 8, slant towards more change.
+
+        // Generate the change value. For each channel, see if it meets
+        // the threshold value for the channel to be assigned a new state.
+        0.4 => float change_bias;
+        if (measure % 4 == 0) {
+          change_bias + 0.2 => change_bias;
+        }
+        if (measure % 8 == 0) {
+          change_bias + 0.5 => change_bias;
+        }
+        Math.random2f(0.0,change_bias) => float change_value;
+
+        // Kick State Increment:
+        if (change_value > kickSequenceFluxes[kickState]) {
+          Math.random2f(0.0,1.0) => float kickBranchValue;
+          if (kickBranchValue < 0.3) {
+            if(kickState > 0) {
+              kickState - 1 => kickState;
+            }
+          }
+          else {
+            if(kickState < 3) {
+              kickState + 1 => kickState;
+            }
+          }
+        }
+
+        // Snare State Increment:
+        if (change_value > snareSequenceFluxes[snareState]) {
+          Math.random2f(0.0,1.0) => float snareBranchValue;
+          if (snareBranchValue < 0.3) {
+            if(snareState > 0) {
+              snareState - 1 => snareState;
+            }
+          }
+          else {
+            if(snareState < 3) {
+              snareState + 1 => snareState;
+            }
+          }
+        }
+
+        // Hihat State Increment:
+        if (change_value > hihatSequenceFluxes[hihatState]) {
+          Math.random2f(0.0,1.0) => float hihatBranchValue;
+          if (hihatBranchValue < 0.3) {
+            if(hihatState > 0) {
+              hihatState - 1 => hihatState;
+            }
+          }
+          else {
+            if(hihatState < 3) {
+              hihatState + 1 => hihatState;
+            }
+          }
+        }
+
+        // Pulse State Increment:
+        if (change_value > pulseSequenceFluxes[pulseState]) {
+          Math.random2f(0.0,1.0) => float pulseBranchValue;
+          if (pulseBranchValue < 0.3) {
+            if(pulseState > 0) {
+              pulseState - 1 => pulseState;
+            }
+          }
+          else {
+            if(pulseState < 3) {
+              pulseState + 1 => pulseState;
+            }
+          }
+        }
+
+        // Arp State Increment:
+        if (change_value > arpSequenceFluxes[arpState]) {
+          Math.random2f(0.0,1.0) => float arpBranchValue;
+          if (arpBranchValue < 0.3) {
+            if(arpState > 0) {
+              arpState - 1 => arpState;
+            }
+          }
+          else {
+            if(arpState < 3) {
+              arpState + 1 => arpState;
+            }
+          }
+        }
+
+
+        // "Break" check: If the global average is above 2.5, on a measure
+        // with a % of 16 == 0, drop back globally to initial state 50%.
+        // XXX TODO
+
+        // Declare integers representing the length of each sequence.
+        kickSequences[kickState].cap() => int kickSequenceLength;
+        snareSequences[snareState].cap() => int snareSequenceLength;
+        hihatSequences[hihatState].cap() => int hihatSequenceLength;
+        pulseSequences[pulseState].cap() => int pulseSequenceLength;
+        arpSequences[arpState].cap() => int arpSequenceLength;
     }
 }
 

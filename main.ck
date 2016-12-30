@@ -131,9 +131,9 @@ me.dir()+"/sounds/arp.wav" => arp.read;
 [1,1,0,1, 1,0,1,0, 1,0,0,0, 0,1,1,1,
  1,1,0,1, 1,0,1,0, 1,1,1,1, 1,1,1,1] @=> int kickSequence03[];
 
-0.1 => float kickSequence00Flux;
-0.1 => float kickSequence01Flux;
-0.1 => float kickSequence02Flux;
+0.8 => float kickSequence00Flux;
+0.6 => float kickSequence01Flux;
+0.4 => float kickSequence02Flux;
 0.1 => float kickSequence03Flux;
 
 [kickSequence00,kickSequence01,
@@ -152,8 +152,8 @@ kickSequence02Flux, kickSequence03Flux] @=> float kickSequenceFluxes[];
 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,1,1,1] @=> int snareSequence03[];
 
 0.1 => float snareSequence00Flux;
-0.1 => float snareSequence01Flux;
-0.1 => float snareSequence02Flux;
+0.3 => float snareSequence01Flux;
+0.3 => float snareSequence02Flux;
 0.1 => float snareSequence03Flux;
 
 [snareSequence00,snareSequence01,
@@ -172,10 +172,10 @@ snareSequence02Flux, snareSequence03Flux] @=> float snareSequenceFluxes[];
 [1,1,1,1, 0,0,0,1, 0,1,0,1, 0,0,0,0,
  1,1,1,1, 0,0,0,0, 0,1,0,1, 0,0,1,1] @=> int hihatSequence03[];
 
-0.1 => float hihatSequence00Flux;
-0.1 => float hihatSequence01Flux;
-0.1 => float hihatSequence02Flux;
-0.1 => float hihatSequence03Flux;
+0.4 => float hihatSequence00Flux;
+0.4 => float hihatSequence01Flux;
+0.4 => float hihatSequence02Flux;
+0.4 => float hihatSequence03Flux;
 
 [hihatSequence00,hihatSequence01,
 hihatSequence02,hihatSequence03] @=> int hihatSequences[][];
@@ -403,7 +403,7 @@ while (true)
         // Snare State Increment:
         if (change_value > snareSequenceFluxes[snareState]) {
           Math.random2f(0.0,1.0) => float snareBranchValue;
-          if (snareBranchValue < 0.3) {
+          if (snareBranchValue < 0.5) {
             if(snareState > 0) {
               snareState - 1 => snareState;
             }
@@ -418,7 +418,7 @@ while (true)
         // Hihat State Increment:
         if (change_value > hihatSequenceFluxes[hihatState]) {
           Math.random2f(0.0,1.0) => float hihatBranchValue;
-          if (hihatBranchValue < 0.3) {
+          if (hihatBranchValue < 0.5) {
             if(hihatState > 0) {
               hihatState - 1 => hihatState;
             }
@@ -433,7 +433,7 @@ while (true)
         // Pulse State Increment:
         if (change_value > pulseSequenceFluxes[pulseState]) {
           Math.random2f(0.0,1.0) => float pulseBranchValue;
-          if (pulseBranchValue < 0.3) {
+          if (pulseBranchValue < 0.4) {
             if(pulseState > 0) {
               pulseState - 1 => pulseState;
             }

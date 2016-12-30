@@ -233,9 +233,9 @@ arpSequence02Flux, arpSequence03Flux] @=> float arpSequenceFluxes[];
 // ----------------------------------------------------------------------------
 12 => int kickStart;
 16 => int snareStart;
-4 => int hihatStart;
+10 => int hihatStart;
 0 => int pulseStart;
-8 => int arpStart;
+6 => int arpStart;
 
 
 // ----------------------------------------------------------------------------

@@ -1,18 +1,4 @@
 // ----------------------------------------------------------------------------
-// NOTES:
-// ...
-// CLASS USED: dac, SndBuf, Pan2
-//
-//
-// TODO: [] chroot so me.dir() is not needed for finding samples.
-// TODO: [] Connect each channel to a Pan2 object
-// TODO: [] Declare a sequence array for each channel.
-// TODO: [] Generate notes using individual functions returning True/False.
-// TODO: [] Assign each channel a measure on/off arrangement?
-// ----------------------------------------------------------------------------
-
-
-// ----------------------------------------------------------------------------
 // Audio Routing Controls:
 // This section configures the audio routing. Create master channels for
 // left, center, and right. Connect these to the DAC.
@@ -246,7 +232,7 @@ arpSequence02Flux, arpSequence03Flux] @=> float arpSequenceFluxes[];
 // begins to play.
 // ----------------------------------------------------------------------------
 12 => int kickStart;
-12 => int snareStart;
+16 => int snareStart;
 4 => int hihatStart;
 0 => int pulseStart;
 8 => int arpStart;

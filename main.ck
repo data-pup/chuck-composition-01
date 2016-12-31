@@ -463,7 +463,18 @@ while (true)
 
         // "Break" check: If the global average is above 2.5, on a measure
         // with a % of 16 == 0, drop back globally to initial state 50%.
-        // XXX TODO
+        if ( measure % 16 == 0) {
+          if ((kickState + snareState + hihatState + pulseState + arpState) / 5 > 2.5) {
+            Math.random2f(0.0,1.0) => float breakValue;
+            if (breakValue > 0.4) {
+              measure + 4 => arpStart;
+              measure + 8 => hihatStart;
+            }
+            if (breakValue > 0.7) {
+              measure + 8 => snareStart;
+            }
+          }
+        }
 
         // Declare integers representing the length of each sequence.
         kickSequences[kickState].cap() => int kickSequenceLength;
